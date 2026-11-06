@@ -1,0 +1,39 @@
+{
+  "__type__": "cc.Material",
+  "_name": "Road",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "c8f66d17-351a-48da-a12c-0212d28575c4",
+    "__expectedType__": "cc.EffectAsset"
+  },
+  "_techIdx": 0,
+  "_defines": [
+    {
+      "USE_ALBEDO_MAP": true
+    }
+  ],
+  "_props": [
+    {
+      "mainColor": {
+        "__type__": "cc.Color",
+        "r": 237,
+        "g": 237,
+        "b": 234,
+        "a": 255
+      },
+      "mainTexture": {
+        "__uuid__": "d0a6dfb6-35e2-4210-a057-cdd95640a768@6c48a",
+        "__expectedType__": "cc.Texture2D"
+      },
+      "tilingOffset": {
+        "__type__": "cc.Vec4",
+        "x": 6,
+        "y": 52.5,
+        "z": 0,
+        "w": 0
+      },
+      "roughness": 1
+    }
+  ]
+}

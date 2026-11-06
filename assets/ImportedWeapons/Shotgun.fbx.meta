@@ -1,0 +1,317 @@
+{
+  "ver": "2.3.13",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "0f2d0c41-95f8-458a-82d9-eec555631ce1",
+  "files": [
+    "__original-animation-0.cconb",
+    "__original-animation-1.cconb",
+    "__original-animation-2.cconb"
+  ],
+  "subMetas": {
+    "c244a": {
+      "importer": "gltf-mesh",
+      "uuid": "0f2d0c41-95f8-458a-82d9-eec555631ce1@c244a",
+      "displayName": "",
+      "id": "c244a",
+      "name": "Cylinder.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 1033
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "ad0e1": {
+      "importer": "gltf-animation",
+      "uuid": "0f2d0c41-95f8-458a-82d9-eec555631ce1@ad0e1",
+      "displayName": "",
+      "id": "ad0e1",
+      "name": "ShotgunArmature|FireWBullet.animation",
+      "userData": {
+        "gltfIndex": 0,
+        "wrapMode": 2,
+        "sample": 30,
+        "span": {
+          "from": 0,
+          "to": 0.7083333134651184
+        },
+        "events": []
+      },
+      "ver": "1.0.17",
+      "imported": true,
+      "files": [
+        ".cconb"
+      ],
+      "subMetas": {}
+    },
+    "3ef83": {
+      "importer": "gltf-animation",
+      "uuid": "0f2d0c41-95f8-458a-82d9-eec555631ce1@3ef83",
+      "displayName": "",
+      "id": "3ef83",
+      "name": "ShotgunArmature|FireWOBullet.animation",
+      "userData": {
+        "gltfIndex": 1,
+        "wrapMode": 2,
+        "sample": 30,
+        "span": {
+          "from": 0,
+          "to": 0.4166666567325592
+        },
+        "events": []
+      },
+      "ver": "1.0.17",
+      "imported": true,
+      "files": [
+        ".cconb"
+      ],
+      "subMetas": {}
+    },
+    "a3f39": {
+      "importer": "gltf-animation",
+      "uuid": "0f2d0c41-95f8-458a-82d9-eec555631ce1@a3f39",
+      "displayName": "",
+      "id": "a3f39",
+      "name": "ShotgunArmature|Reload.animation",
+      "userData": {
+        "gltfIndex": 2,
+        "wrapMode": 2,
+        "sample": 30,
+        "span": {
+          "from": 0,
+          "to": 0.25
+        },
+        "events": []
+      },
+      "ver": "1.0.17",
+      "imported": true,
+      "files": [
+        ".cconb"
+      ],
+      "subMetas": {}
+    },
+    "438fe": {
+      "importer": "gltf-skeleton",
+      "uuid": "0f2d0c41-95f8-458a-82d9-eec555631ce1@438fe",
+      "displayName": "",
+      "id": "438fe",
+      "name": "UnnamedSkeleton.skeleton",
+      "userData": {
+        "gltfIndex": 0,
+        "jointsLength": 4
+      },
+      "ver": "1.0.1",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "b00cb": {
+      "importer": "gltf-material",
+      "uuid": "0f2d0c41-95f8-458a-82d9-eec555631ce1@b00cb",
+      "displayName": "",
+      "id": "b00cb",
+      "name": "BulletRed.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "5f584": {
+      "importer": "gltf-material",
+      "uuid": "0f2d0c41-95f8-458a-82d9-eec555631ce1@5f584",
+      "displayName": "",
+      "id": "5f584",
+      "name": "BulletYellow.material",
+      "userData": {
+        "gltfIndex": 1
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "c1949": {
+      "importer": "gltf-material",
+      "uuid": "0f2d0c41-95f8-458a-82d9-eec555631ce1@c1949",
+      "displayName": "",
+      "id": "c1949",
+      "name": "Trigger.material",
+      "userData": {
+        "gltfIndex": 2
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "8f8aa": {
+      "importer": "gltf-material",
+      "uuid": "0f2d0c41-95f8-458a-82d9-eec555631ce1@8f8aa",
+      "displayName": "",
+      "id": "8f8aa",
+      "name": "Black.material",
+      "userData": {
+        "gltfIndex": 3
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f4977": {
+      "importer": "gltf-material",
+      "uuid": "0f2d0c41-95f8-458a-82d9-eec555631ce1@f4977",
+      "displayName": "",
+      "id": "f4977",
+      "name": "DarkMetal.material",
+      "userData": {
+        "gltfIndex": 4
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "3aa1d": {
+      "importer": "gltf-material",
+      "uuid": "0f2d0c41-95f8-458a-82d9-eec555631ce1@3aa1d",
+      "displayName": "",
+      "id": "3aa1d",
+      "name": "Barrels.material",
+      "userData": {
+        "gltfIndex": 5
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "6b1a0": {
+      "importer": "gltf-scene",
+      "uuid": "0f2d0c41-95f8-458a-82d9-eec555631ce1@6b1a0",
+      "displayName": "",
+      "id": "6b1a0",
+      "name": "Shotgun.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "animationImportSettings": [
+      {
+        "name": "ShotgunArmature|FireWBullet",
+        "duration": 0.7083333134651184,
+        "fps": 30,
+        "splits": [
+          {
+            "name": "ShotgunArmature|FireWBullet",
+            "from": 0,
+            "to": 0.7083333134651184,
+            "wrapMode": 2,
+            "previousId": "ad0e1"
+          }
+        ]
+      },
+      {
+        "name": "ShotgunArmature|FireWOBullet",
+        "duration": 0.4166666567325592,
+        "fps": 30,
+        "splits": [
+          {
+            "name": "ShotgunArmature|FireWOBullet",
+            "from": 0,
+            "to": 0.4166666567325592,
+            "wrapMode": 2,
+            "previousId": "3ef83"
+          }
+        ]
+      },
+      {
+        "name": "ShotgunArmature|Reload",
+        "duration": 0.25,
+        "fps": 30,
+        "splits": [
+          {
+            "name": "ShotgunArmature|Reload",
+            "from": 0,
+            "to": 0.25,
+            "wrapMode": 2,
+            "previousId": "a3f39"
+          }
+        ]
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "0f2d0c41-95f8-458a-82d9-eec555631ce1@c244a"
+      ],
+      "skeletons": [
+        "0f2d0c41-95f8-458a-82d9-eec555631ce1@438fe"
+      ],
+      "textures": [],
+      "materials": [
+        "0f2d0c41-95f8-458a-82d9-eec555631ce1@b00cb",
+        "0f2d0c41-95f8-458a-82d9-eec555631ce1@5f584",
+        "0f2d0c41-95f8-458a-82d9-eec555631ce1@c1949",
+        "0f2d0c41-95f8-458a-82d9-eec555631ce1@8f8aa",
+        "0f2d0c41-95f8-458a-82d9-eec555631ce1@f4977",
+        "0f2d0c41-95f8-458a-82d9-eec555631ce1@3aa1d"
+      ],
+      "scenes": [
+        "0f2d0c41-95f8-458a-82d9-eec555631ce1@6b1a0"
+      ]
+    }
+  }
+}

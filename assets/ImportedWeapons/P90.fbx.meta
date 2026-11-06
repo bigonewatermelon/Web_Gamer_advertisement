@@ -1,0 +1,266 @@
+{
+  "ver": "2.3.13",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "886fda05-e2d2-4c30-bd32-03dbdeef58e4",
+  "files": [
+    "__original-animation-0.cconb",
+    "__original-animation-1.cconb",
+    "__original-animation-2.cconb"
+  ],
+  "subMetas": {
+    "99380": {
+      "importer": "gltf-material",
+      "uuid": "886fda05-e2d2-4c30-bd32-03dbdeef58e4@99380",
+      "displayName": "",
+      "id": "99380",
+      "name": "Material.001.material",
+      "userData": {
+        "gltfIndex": 2
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "0b568": {
+      "importer": "gltf-mesh",
+      "uuid": "886fda05-e2d2-4c30-bd32-03dbdeef58e4@0b568",
+      "displayName": "",
+      "id": "0b568",
+      "name": "Cylinder.001.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 954
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "e3c3a": {
+      "importer": "gltf-animation",
+      "uuid": "886fda05-e2d2-4c30-bd32-03dbdeef58e4@e3c3a",
+      "displayName": "",
+      "id": "e3c3a",
+      "name": "P90Armature|Fire.animation",
+      "userData": {
+        "gltfIndex": 0,
+        "wrapMode": 2,
+        "sample": 30,
+        "span": {
+          "from": 0,
+          "to": 0.23333333432674408
+        },
+        "events": []
+      },
+      "ver": "1.0.17",
+      "imported": true,
+      "files": [
+        ".cconb"
+      ],
+      "subMetas": {}
+    },
+    "3af21": {
+      "importer": "gltf-animation",
+      "uuid": "886fda05-e2d2-4c30-bd32-03dbdeef58e4@3af21",
+      "displayName": "",
+      "id": "3af21",
+      "name": "P90Armature|Reload.animation",
+      "userData": {
+        "gltfIndex": 1,
+        "wrapMode": 2,
+        "sample": 30,
+        "span": {
+          "from": 0,
+          "to": 0.800000011920929
+        },
+        "events": []
+      },
+      "ver": "1.0.17",
+      "imported": true,
+      "files": [
+        ".cconb"
+      ],
+      "subMetas": {}
+    },
+    "0d72f": {
+      "importer": "gltf-animation",
+      "uuid": "886fda05-e2d2-4c30-bd32-03dbdeef58e4@0d72f",
+      "displayName": "",
+      "id": "0d72f",
+      "name": "P90|Fire.animation",
+      "userData": {
+        "gltfIndex": 2,
+        "wrapMode": 2,
+        "sample": 30,
+        "span": {
+          "from": 0,
+          "to": 0.23333333432674408
+        },
+        "events": []
+      },
+      "ver": "1.0.17",
+      "imported": true,
+      "files": [
+        ".cconb"
+      ],
+      "subMetas": {}
+    },
+    "438fe": {
+      "importer": "gltf-skeleton",
+      "uuid": "886fda05-e2d2-4c30-bd32-03dbdeef58e4@438fe",
+      "displayName": "",
+      "id": "438fe",
+      "name": "UnnamedSkeleton.skeleton",
+      "userData": {
+        "gltfIndex": 0,
+        "jointsLength": 3
+      },
+      "ver": "1.0.1",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "e736c": {
+      "importer": "gltf-material",
+      "uuid": "886fda05-e2d2-4c30-bd32-03dbdeef58e4@e736c",
+      "displayName": "",
+      "id": "e736c",
+      "name": "Material.004.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "a9549": {
+      "importer": "gltf-material",
+      "uuid": "886fda05-e2d2-4c30-bd32-03dbdeef58e4@a9549",
+      "displayName": "",
+      "id": "a9549",
+      "name": "Material.003.material",
+      "userData": {
+        "gltfIndex": 1
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "5c195": {
+      "importer": "gltf-scene",
+      "uuid": "886fda05-e2d2-4c30-bd32-03dbdeef58e4@5c195",
+      "displayName": "",
+      "id": "5c195",
+      "name": "P90.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "animationImportSettings": [
+      {
+        "name": "P90Armature|Fire",
+        "duration": 0.23333333432674408,
+        "fps": 30,
+        "splits": [
+          {
+            "name": "P90Armature|Fire",
+            "from": 0,
+            "to": 0.23333333432674408,
+            "wrapMode": 2,
+            "previousId": "e3c3a"
+          }
+        ]
+      },
+      {
+        "name": "P90Armature|Reload",
+        "duration": 0.800000011920929,
+        "fps": 30,
+        "splits": [
+          {
+            "name": "P90Armature|Reload",
+            "from": 0,
+            "to": 0.800000011920929,
+            "wrapMode": 2,
+            "previousId": "3af21"
+          }
+        ]
+      },
+      {
+        "name": "P90|Fire",
+        "duration": 0.23333333432674408,
+        "fps": 30,
+        "splits": [
+          {
+            "name": "P90|Fire",
+            "from": 0,
+            "to": 0.23333333432674408,
+            "wrapMode": 2,
+            "previousId": "0d72f"
+          }
+        ]
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "886fda05-e2d2-4c30-bd32-03dbdeef58e4@0b568"
+      ],
+      "skeletons": [
+        "886fda05-e2d2-4c30-bd32-03dbdeef58e4@438fe"
+      ],
+      "textures": [],
+      "materials": [
+        "886fda05-e2d2-4c30-bd32-03dbdeef58e4@e736c",
+        "886fda05-e2d2-4c30-bd32-03dbdeef58e4@a9549",
+        "886fda05-e2d2-4c30-bd32-03dbdeef58e4@99380"
+      ],
+      "scenes": [
+        "886fda05-e2d2-4c30-bd32-03dbdeef58e4@5c195"
+      ]
+    }
+  }
+}

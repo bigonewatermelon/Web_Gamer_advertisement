@@ -1,0 +1,262 @@
+{
+  "ver": "2.3.13",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "516e1b0f-677d-421e-a8e3-37c8fe21e714",
+  "files": [
+    "__original-animation-0.cconb",
+    "__original-animation-1.cconb"
+  ],
+  "subMetas": {
+    "51329": {
+      "importer": "gltf-animation",
+      "uuid": "516e1b0f-677d-421e-a8e3-37c8fe21e714@51329",
+      "displayName": "",
+      "id": "51329",
+      "name": "RevolverArmature|Fire.animation",
+      "userData": {
+        "gltfIndex": 0,
+        "wrapMode": 2,
+        "sample": 30,
+        "span": {
+          "from": 0,
+          "to": 0.7083333134651184
+        },
+        "events": []
+      },
+      "ver": "1.0.17",
+      "imported": true,
+      "files": [
+        ".cconb"
+      ],
+      "subMetas": {}
+    },
+    "c500b": {
+      "importer": "gltf-mesh",
+      "uuid": "516e1b0f-677d-421e-a8e3-37c8fe21e714@c500b",
+      "displayName": "",
+      "id": "c500b",
+      "name": "Cylinder.022.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 2812
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "bdedf": {
+      "importer": "gltf-animation",
+      "uuid": "516e1b0f-677d-421e-a8e3-37c8fe21e714@bdedf",
+      "displayName": "",
+      "id": "bdedf",
+      "name": "RevolverArmature|Reload.animation",
+      "userData": {
+        "gltfIndex": 1,
+        "wrapMode": 2,
+        "sample": 30,
+        "span": {
+          "from": 0,
+          "to": 1.9166666269302368
+        },
+        "events": []
+      },
+      "ver": "1.0.17",
+      "imported": true,
+      "files": [
+        ".cconb"
+      ],
+      "subMetas": {}
+    },
+    "438fe": {
+      "importer": "gltf-skeleton",
+      "uuid": "516e1b0f-677d-421e-a8e3-37c8fe21e714@438fe",
+      "displayName": "",
+      "id": "438fe",
+      "name": "UnnamedSkeleton.skeleton",
+      "userData": {
+        "gltfIndex": 0,
+        "jointsLength": 6
+      },
+      "ver": "1.0.1",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "5f584": {
+      "importer": "gltf-material",
+      "uuid": "516e1b0f-677d-421e-a8e3-37c8fe21e714@5f584",
+      "displayName": "",
+      "id": "5f584",
+      "name": "BulletYellow.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "19acd": {
+      "importer": "gltf-material",
+      "uuid": "516e1b0f-677d-421e-a8e3-37c8fe21e714@19acd",
+      "displayName": "",
+      "id": "19acd",
+      "name": "BulletTip.material",
+      "userData": {
+        "gltfIndex": 1
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "710bf": {
+      "importer": "gltf-material",
+      "uuid": "516e1b0f-677d-421e-a8e3-37c8fe21e714@710bf",
+      "displayName": "",
+      "id": "710bf",
+      "name": "Metal.material",
+      "userData": {
+        "gltfIndex": 2
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "8f8aa": {
+      "importer": "gltf-material",
+      "uuid": "516e1b0f-677d-421e-a8e3-37c8fe21e714@8f8aa",
+      "displayName": "",
+      "id": "8f8aa",
+      "name": "Black.material",
+      "userData": {
+        "gltfIndex": 3
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "8c1ef": {
+      "importer": "gltf-material",
+      "uuid": "516e1b0f-677d-421e-a8e3-37c8fe21e714@8c1ef",
+      "displayName": "",
+      "id": "8c1ef",
+      "name": "Wood.material",
+      "userData": {
+        "gltfIndex": 4
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "48b71": {
+      "importer": "gltf-scene",
+      "uuid": "516e1b0f-677d-421e-a8e3-37c8fe21e714@48b71",
+      "displayName": "",
+      "id": "48b71",
+      "name": "Revolver.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "animationImportSettings": [
+      {
+        "name": "RevolverArmature|Fire",
+        "duration": 0.7083333134651184,
+        "fps": 30,
+        "splits": [
+          {
+            "name": "RevolverArmature|Fire",
+            "from": 0,
+            "to": 0.7083333134651184,
+            "wrapMode": 2,
+            "previousId": "51329"
+          }
+        ]
+      },
+      {
+        "name": "RevolverArmature|Reload",
+        "duration": 1.9166666269302368,
+        "fps": 30,
+        "splits": [
+          {
+            "name": "RevolverArmature|Reload",
+            "from": 0,
+            "to": 1.9166666269302368,
+            "wrapMode": 2,
+            "previousId": "bdedf"
+          }
+        ]
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "516e1b0f-677d-421e-a8e3-37c8fe21e714@c500b"
+      ],
+      "skeletons": [
+        "516e1b0f-677d-421e-a8e3-37c8fe21e714@438fe"
+      ],
+      "textures": [],
+      "materials": [
+        "516e1b0f-677d-421e-a8e3-37c8fe21e714@5f584",
+        "516e1b0f-677d-421e-a8e3-37c8fe21e714@19acd",
+        "516e1b0f-677d-421e-a8e3-37c8fe21e714@710bf",
+        "516e1b0f-677d-421e-a8e3-37c8fe21e714@8f8aa",
+        "516e1b0f-677d-421e-a8e3-37c8fe21e714@8c1ef"
+      ],
+      "scenes": [
+        "516e1b0f-677d-421e-a8e3-37c8fe21e714@48b71"
+      ]
+    }
+  }
+}
