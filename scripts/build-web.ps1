@@ -15,10 +15,24 @@ $logs = Join-Path $project 'temp/ci-build'
 New-Item -ItemType Directory -Path $logs -Force | Out-Null
 $config = Join-Path $PSScriptRoot 'web-build.json'
 $arguments = '--project "' + $project + '" --build "configPath=' + $config + '"'
+# Start-Process -Wait also waits for Electron's descendant processes, which can
+# remain alive after a successful command-line build on a hosted Windows runner.
 $process = Start-Process -FilePath $CreatorPath -ArgumentList $arguments `
-    -WorkingDirectory $project -WindowStyle Hidden -Wait -PassThru `
+    -WorkingDirectory $project -WindowStyle Hidden -PassThru `
     -RedirectStandardOutput (Join-Path $logs 'stdout.log') `
     -RedirectStandardError (Join-Path $logs 'stderr.log')
+$deadline = [DateTime]::UtcNow.AddMinutes(15)
+$nextProgress = [DateTime]::UtcNow.AddSeconds(30)
+while (-not $process.WaitForExit(1000)) {
+    if ([DateTime]::UtcNow -ge $deadline) {
+        Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+        throw 'Cocos build exceeded 15 minutes. See temp/ci-build.'
+    }
+    if ([DateTime]::UtcNow -ge $nextProgress) {
+        Get-Content (Join-Path $logs 'stdout.log') -Tail 5
+        $nextProgress = [DateTime]::UtcNow.AddSeconds(30)
+    }
+}
 
 Get-Content (Join-Path $logs 'stdout.log') -Tail 35
 Get-Content (Join-Path $logs 'stderr.log') -Tail 35

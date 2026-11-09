@@ -23,7 +23,8 @@ jobs:
           persist-credentials: false
 
       - name: Cache Cocos Creator 3.8.5
-        uses: actions/cache@v4
+        id: cocos-cache
+        uses: actions/cache/restore@v4
         with:
           path: ${{ runner.temp }}/cocos-3.8.5
           key: cocos-creator-3.8.5-windows-122116-v1
@@ -45,6 +46,13 @@ jobs:
           }
           if (-not $editor) { throw 'CocosCreator.exe is missing.' }
           "COCOS_CREATOR_PATH=$($editor.FullName)" >> $env:GITHUB_ENV
+
+      - name: Save Cocos installation
+        if: steps.cocos-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/cocos-3.8.5
+          key: cocos-creator-3.8.5-windows-122116-v1
 
       - name: Build release game from source
         shell: pwsh
