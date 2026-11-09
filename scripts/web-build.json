@@ -1,0 +1,10 @@
+{
+  "platform": "web-mobile",
+  "debug": false,
+  "md5Cache": true,
+  "startScene": "17cfc17d-5ea0-4ba3-8408-d44b71b69b89",
+  "outputName": "web-release",
+  "taskName": "web-release",
+  "buildPath": "project://build",
+  "mainBundleCompressionType": "merge_dep"
+}

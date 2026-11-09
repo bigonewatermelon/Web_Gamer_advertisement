@@ -1,0 +1,84 @@
+name: Build game and deploy Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Cache Cocos Creator 3.8.5
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/cocos-3.8.5
+          key: cocos-creator-3.8.5-windows-122116-v1
+
+      - name: Install Cocos Creator 3.8.5
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $install = Join-Path $env:RUNNER_TEMP 'cocos-3.8.5'
+          $editor = Get-ChildItem $install -Filter CocosCreator.exe -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $editor) {
+            $archive = Join-Path $env:RUNNER_TEMP 'cocos-3.8.5.zip'
+            curl.exe --fail --location --retry 3 --output $archive 'https://download.cocos.com/CocosCreator/v3.8.5/CocosCreator-v3.8.5-win-122116.zip'
+            if ($LASTEXITCODE -ne 0) { throw 'Cocos Creator download failed.' }
+            New-Item -ItemType Directory -Path $install -Force | Out-Null
+            tar.exe -xf $archive -C $install
+            if ($LASTEXITCODE -ne 0) { throw 'Cocos Creator extraction failed.' }
+            $editor = Get-ChildItem $install -Filter CocosCreator.exe -Recurse | Select-Object -First 1
+          }
+          if (-not $editor) { throw 'CocosCreator.exe is missing.' }
+          "COCOS_CREATOR_PATH=$($editor.FullName)" >> $env:GITHUB_ENV
+
+      - name: Build release game from source
+        shell: pwsh
+        run: ./scripts/build-web.ps1
+
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cocos-build-logs
+          path: |
+            temp/ci-build/*.log
+            temp/builder/log/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload game for Pages
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: build/web-release
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Deploy game
+        id: deployment
+        uses: actions/deploy-pages@v4
