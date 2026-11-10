@@ -179,6 +179,8 @@ export class GameManager extends Component {
     private readonly zombieFadeMaterials: Material[] = [];
 
     start() {
+        // Override Creator's default tab title in both preview and exported web games.
+        if (typeof document !== 'undefined') document.title = "David's Game";
         this.audio = this.node.addComponent(GameAudio);
         this.bossGoal = this.initialBossGoal;
         this.createRestartIcon();
@@ -253,12 +255,12 @@ export class GameManager extends Component {
         }
     }
 
-    private setSquadCount(count: number) {
+    private setSquadCount(count: number, penalizeFirepower = true) {
         const previous = this.count;
         this.count = Math.max(0, Math.min(count, MAX_SQUAD_SIZE));
         if (this.count !== previous) this.audio?.play(this.count > previous ? 'recruit' : 'loss');
-        if (this.count < previous) {
-            this.squadFire?.decreaseDamage(); // One penalty per actual loss event, not per casualty.
+        if (this.count < previous && penalizeFirepower) {
+            this.squadFire?.decreaseDamage(); // Combat losses penalize firepower; gate costs do not.
             this.refreshRewardPreviews();
         }
         this.showCount();
@@ -782,7 +784,7 @@ export class GameManager extends Component {
                     this.grantRescueBuff(Math.floor(this.rand(0, 3)));
                 } else {
                     this.setSquadCount(gate.value === 'double' ? this.count * 2
-                        : gate.value === 'halve' ? Math.floor(this.count / 2) : this.count + gate.value);
+                        : gate.value === 'halve' ? Math.floor(this.count / 2) : this.count + gate.value, false);
                 }
                 row.left.node.destroy();
                 row.right.node.destroy();

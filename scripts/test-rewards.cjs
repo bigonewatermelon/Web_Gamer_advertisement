@@ -1083,7 +1083,14 @@ assert.equal(batch.count,7); assert.equal(batch.squadFire.currentDamage,9); // O
 const gateLoss=formationManager(); gateLoss.setSquadCount(9);
 gateLoss.squadFire = new SquadFire(new Node(),{name:'blaster-e'},{},28.5); for (let i=1;i<10;i++) gateLoss.squadFire.upgrade(null);
 gateLoss.player.position.z=-32;gateLoss.gates=[{z:-31,left:{node:new Node(),value:'halve'},right:{node:new Node(),value:'halve'}}];
-gateLoss.checkPathEvents(0); assert.equal(gateLoss.count,4);assert.equal(gateLoss.squadFire.currentDamage,9);
+gateLoss.checkPathEvents(0); assert.equal(gateLoss.count,4);assert.equal(gateLoss.squadFire.currentDamage,10);
+for (const [value, remaining] of [[-2, 2], [-3, 0]]) {
+    gateLoss.previousPlayerPosition.set(gateLoss.player.position);
+    gateLoss.player.position.z -= 2;
+    gateLoss.gates=[{z:gateLoss.player.position.z+1,left:{node:new Node(),value},right:{node:new Node(),value}}];
+    gateLoss.checkPathEvents(0);
+    assert.equal(gateLoss.count,remaining); assert.equal(gateLoss.squadFire.currentDamage,10);
+}
 const progression=bossSchedule();
 for(const target of [150,300,600,1200,2400]) {
     assert.equal(progression.bossKillTarget,target);
