@@ -17,19 +17,30 @@ export class PlayerRunner extends Component {
     private keyDir = 0;             // -1 = left, 1 = right, 0 = none
     private mouseHeld = false;
     private pos = new Vec3();
+    private steeringTouches = new Set<number>();
+    isUIInput: ((event: EventTouch | EventMouse) => boolean) | null = null;
 
-    onLoad() {
+    onEnable() {
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
+        input.on(Input.EventType.TOUCH_START, this.onTouchStart, this);
+        input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
+        input.on(Input.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
         input.on(Input.EventType.TOUCH_MOVE, this.onTouchMove, this);
         input.on(Input.EventType.MOUSE_DOWN, this.onMouseDown, this);
         input.on(Input.EventType.MOUSE_UP, this.onMouseUp, this);
         input.on(Input.EventType.MOUSE_MOVE, this.onMouseMove, this);
     }
 
-    onDestroy() {
+    onDisable() {
+        this.keyDir = 0;
+        this.mouseHeld = false;
+        this.steeringTouches.clear();
         input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
+        input.off(Input.EventType.TOUCH_START, this.onTouchStart, this);
+        input.off(Input.EventType.TOUCH_END, this.onTouchEnd, this);
+        input.off(Input.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
         input.off(Input.EventType.TOUCH_MOVE, this.onTouchMove, this);
         input.off(Input.EventType.MOUSE_DOWN, this.onMouseDown, this);
         input.off(Input.EventType.MOUSE_UP, this.onMouseUp, this);
@@ -47,18 +58,31 @@ export class PlayerRunner extends Component {
         if ((left && this.keyDir === -1) || (right && this.keyDir === 1)) this.keyDir = 0;
     }
 
-    private onTouchMove(e: EventTouch) {
-        this.slide(e.getDelta().x * this.dragSensitivity);
+    private onTouchStart(e: EventTouch) {
+        if (this.enabledInHierarchy && !this.isUIInput?.(e)) this.steeringTouches.add(e.getID());
+        else this.steeringTouches.delete(e.getID());
     }
 
-    private onMouseDown(e: EventMouse) { this.mouseHeld = true; }
+    private onTouchEnd(e: EventTouch) { this.steeringTouches.delete(e.getID()); }
+
+    private onTouchMove(e: EventTouch) {
+        if (this.steeringTouches.has(e.getID()) && !this.isUIInput?.(e)) {
+            this.slide(e.getDelta().x * this.dragSensitivity);
+        }
+    }
+
+    private onMouseDown(e: EventMouse) {
+        this.mouseHeld = this.enabledInHierarchy && e.getButton() === EventMouse.BUTTON_LEFT && !this.isUIInput?.(e);
+    }
     private onMouseUp(e: EventMouse) { this.mouseHeld = false; }
     private onMouseMove(e: EventMouse) {
+        if (this.isUIInput?.(e)) this.mouseHeld = false;
         if (this.mouseHeld) this.slide(e.getDelta().x * this.dragSensitivity);
     }
 
     /** Move sideways by an amount, staying on the road. */
     private slide(amount: number) {
+        if (!this.enabledInHierarchy) return;
         this.node.getPosition(this.pos);
         this.pos.x = Math.min(this.roadHalfWidth, Math.max(-this.roadHalfWidth, this.pos.x + amount));
         this.node.setPosition(this.pos);

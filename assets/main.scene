@@ -1311,7 +1311,20 @@
       "__uuid__": "648c71c6-ceb8-4bb3-99ec-632e2f41c225",
       "__expectedType__": "cc.Prefab"
     },
-    "bossPrefabs": [],
+    "bossPrefabs": [
+      {
+        "__uuid__": "443fd765-15d9-4668-8c97-30e73fdf5387@bd067",
+        "__expectedType__": "cc.Prefab"
+      },
+      {
+        "__uuid__": "65c14c5e-f865-4649-8e03-145fb890fb7d@2f647",
+        "__expectedType__": "cc.Prefab"
+      },
+      {
+        "__uuid__": "7da62898-f185-4208-beae-5543562dae83@8528b",
+        "__expectedType__": "cc.Prefab"
+      }
+    ],
     "blaster": {
       "__uuid__": "3912985b-f436-48d9-b33f-d440a2733215@284e1",
       "__expectedType__": "cc.Prefab"

@@ -1,10 +1,12 @@
-import { Color, Label, Layers, Material, Mesh, MeshRenderer, Node, Prefab, Quat, RenderRoot2D, Texture2D, Vec3, Vec4, instantiate, primitives, tween, utils } from 'cc';
+import { Color, Label, Layers, Material, Mesh, MeshRenderer, Node, Prefab, Quat, RenderRoot2D, Texture2D, Vec3, instantiate, primitives, tween, utils } from 'cc';
+
+import { WeaponAppearance } from './SquadFire';
 
 const DECK_START = 16;
 const DECK_END = -54;
 const DECK_CENTER = (DECK_START + DECK_END) / 2;
 const DECK_LENGTH = DECK_START - DECK_END;
-const BRIDGE_LOOKAHEAD = 175;
+const BRIDGE_LOOKAHEAD = 240; // Covers the 212-unit horde frontier plus deck margin.
 
 /** Creates the bridge scenery and shares its meshes with the course markers. */
 export class BridgeScenery {
@@ -13,9 +15,18 @@ export class BridgeScenery {
     private readonly deck = utils.createMesh(primitives.plane({
         width: 8, length: DECK_LENGTH, widthSegments: 1, lengthSegments: 1,
     }));
-    private readonly concrete = this.surface(165, 164, 154);
-    private readonly steel = this.surface(92, 91, 84);
-    private readonly cable = this.surface(141, 138, 120);
+    // Scenery-only palette; gameplay markers keep their own original materials.
+    private readonly concrete = this.surface(255, 234, 199);
+    private readonly steel = this.surface(244, 139, 147);
+    private readonly cable = this.surface(255, 215, 143);
+    private readonly mint = this.surface(112, 211, 187);
+    private readonly cloudWhite = this.color(255, 249, 239);
+    private readonly seaFoam = this.color(174, 239, 232);
+    private readonly sand = this.surface(255, 221, 162);
+    private readonly leaves = this.surface(105, 196, 153);
+    private readonly trunk = this.surface(179, 133, 102);
+    private readonly round = utils.createMesh(primitives.sphere(0.5, { segments: 12 }));
+    private readonly rewardAppearance = new WeaponAppearance();
     private readonly spans: Node[] = [];
     private nextSpanZ = 0;
     private ocean: Node | null = null;
@@ -24,13 +35,9 @@ export class BridgeScenery {
 
     constructor(private readonly root: Node, private readonly deckMaterial: Material | null) {}
 
-    build(oceanTexture: Texture2D | null) {
-        const ocean = new Material();
-        ocean.initialize({ effectName: 'builtin-unlit', defines: { USE_TEXTURE: !!oceanTexture } });
-        if (oceanTexture) {
-            ocean.setProperty('mainTexture', oceanTexture);
-            ocean.setProperty('tilingOffset', new Vec4(138, 246, 0, 0));
-        } else ocean.setProperty('mainColor', new Color(18, 133, 195, 255));
+    build(_oceanTexture: Texture2D | null) {
+        // Flat turquoise water and broad foam strokes replace the realistic ripples.
+        const ocean = this.color(83, 192, 211);
 
         const water = utils.createMesh(primitives.plane({ width: 1800, length: 1800, widthSegments: 1, lengthSegments: 1 }));
         this.ocean = this.piece(this.root, 'Ocean', water, ocean, 0, -2.2, -840, 1, 1, 1);
@@ -70,13 +77,17 @@ export class BridgeScenery {
             this.piece(span, 'Lower rail', this.box, steel, railX, 0.51, DECK_CENTER, 0.11, 0.09, DECK_LENGTH, true);
 
             for (let z = DECK_START - 1.5; z > DECK_END; z -= 3.5) {
-                this.piece(span, 'Rail upright', this.box, steel, railX, 0.49, z, 0.11, 0.65, 0.13, true);
+                this.piece(span, 'Rail upright', this.post, this.mint, railX, 0.49, z, 0.14, 0.65, 0.14, true);
+                this.piece(span, 'Round rail cap', this.round, concrete, railX, 0.88, z, 0.24, 0.24, 0.24);
             }
             for (const z of [towerNear, towerFar]) {
                 this.piece(span, 'Bridge tower', this.box, steel, towerX, 2.45, z, 0.76, 9.4, 0.91, true);
                 this.piece(span, 'Tower flange', this.box, concrete, towerX - side * 0.35, 2.6, z,
                     0.13, 9.1, 0.99, true);
                 this.piece(span, 'Tower footing', this.box, concrete, towerX, -0.25, z, 1.05, 0.95, 1.32, true);
+                this.piece(span, 'Mint tower crown', this.round, this.mint, towerX, 7.25, z, 1.18, 0.72, 1.22);
+                this.piece(span, 'Golden crown bead', this.round, cable, towerX, 7.73, z, 0.4, 0.4, 0.4);
+                this.piece(span, 'Cream tower collar', this.box, concrete, towerX, 5.95, z, 0.88, 0.23, 1.03);
             }
 
             let previous = new Vec3(towerX, 7, towerNear);
@@ -95,11 +106,52 @@ export class BridgeScenery {
 
         for (const z of [towerNear, towerFar]) {
             this.piece(span, 'Tower crossbeam', this.box, steel, 0, 6.88, z, 9.05, 0.43, 0.64, true);
+            this.piece(span, 'Crossbeam cream inset', this.box, concrete, 0, 6.9, z + 0.33, 7.7, 0.12, 0.035);
+        }
+        this.buildSeaside(span);
+    }
+
+    private buildSeaside(span: Node) {
+        // Decorations belong to the streamed span, so they are retired with it.
+        // Keep every silhouette outside the playable bridge and its gate labels.
+        const alternate = Math.abs(Math.round(span.position.z / DECK_LENGTH)) % 2;
+        for (const side of [-1, 1]) {
+            const islandX = side * (19 + alternate * 6);
+            const islandZ = side < 0 ? -15 : -44;
+            this.piece(span, 'Island foam rim', this.round, this.seaFoam,
+                islandX, -2.13, islandZ, 10, 0.22, 7);
+            this.piece(span, 'Peach sand island', this.round, this.sand,
+                islandX, -2.05, islandZ, 8.6, 1.6, 5.8);
+            this.piece(span, 'Mint island lawn', this.round, this.mint,
+                islandX, -1.47, islandZ, 6.2, 0.65, 3.9);
+            for (let i = 0; i < 2; i++) {
+                const x = islandX + (i === 0 ? -1.35 : 1.1);
+                const z = islandZ + (i === 0 ? 0.25 : -0.55);
+                this.piece(span, 'Little tree trunk', this.post, this.trunk, x, -0.25, z, 0.32, 2.4, 0.32);
+                this.piece(span, 'Round tree canopy', this.round, this.leaves,
+                    x, 1.05 + i * 0.35, z, 2.5, 2.8, 2.3);
+                this.piece(span, 'Mint canopy tuft', this.round, this.mint,
+                    x - 0.55, 1.65 + i * 0.35, z + 0.1, 1.5, 1.65, 1.5);
+            }
+
+            const cloudX = side * (28 + alternate * 5);
+            const cloudZ = side < 0 ? -40 : -8;
+            for (let puff = 0; puff < 3; puff++) {
+                this.piece(span, 'Marshmallow cloud', this.round, this.cloudWhite,
+                    cloudX + (puff - 1) * 2.1, 9 + (puff === 1 ? 0.75 : 0), cloudZ,
+                    4.5, puff === 1 ? 3 : 2, 2.7);
+            }
+            for (let i = 0; i < 7; i++) {
+                const x = side * (9 + (i % 3) * 6 + alternate * 2);
+                const z = DECK_START - 5 - i * 9;
+                this.piece(span, 'Soft ocean ripple', this.round, this.seaFoam,
+                    x, -2.16, z, 2.2 + (i % 3), 0.06, 0.24);
+            }
         }
     }
 
-    gate(z: number, side: number, value: number | 'double', labelOffset = 0) {
-        const positive = value === 'double' || value > 0;
+    gate(z: number, side: number, value: number | 'double' | 'halve', labelOffset = 0) {
+        const positive = value === 'double' || (typeof value === 'number' && value > 0);
         const { frame, cap, panel, glow } = positive ? this.recruit : this.penalty;
         const gate = new Node(positive ? 'Recruit gate' : 'Penalty gate');
         this.root.addChild(gate);
@@ -113,14 +165,15 @@ export class BridgeScenery {
             this.piece(gate, 'Gate cap', this.post, cap, x, 1.53, 0, 0.25, 0.11, 0.25);
             this.piece(gate, 'Gate footing', this.post, frame, x, 0.11, 0, 0.27, 0.2, 0.27);
         }
-        const text = value === 'double' ? '×2' : value > 0 ? `+${value}` : `−${Math.abs(value)}`;
+        const text = value === 'double' ? '×2' : value === 'halve' ? '÷2' : value > 0 ? `+${value}` : `−${Math.abs(value)}`;
         this.label(gate, text, labelOffset, 0.94, 0.2, 0.012, -15);
         return gate;
     }
 
-    numberedTarget(x: number, z: number, number: number) {
+    numberedTarget(x: number, z: number, number: number | string) {
         const target = new Node(`Target ${number}`);
-        this.spans[0].addChild(target);
+        // Reward lifetime is managed by GameManager, independently of recycled deck spans.
+        this.root.addChild(target);
         target.setPosition(x, 0, z);
         target.setScale(1, 1.22, 1);
         const rubber = this.surface(51, 48, 42);
@@ -138,20 +191,18 @@ export class BridgeScenery {
         return { node: target, label };
     }
 
-    floatingRifle(prefab: Prefab, x: number, y: number, z: number) {
+    floatingRifle(prefab: Prefab, x: number, y: number, z: number, damage: number) {
         const display = new Node('Floating rifle display');
-        this.spans[0].addChild(display);
+        this.root.addChild(display);
         display.setPosition(x, y, z);
 
         const rifle = instantiate(prefab);
         display.addChild(rifle);
-        rifle.setScale(1.8, 1.8, 1.8);
+        rifle.setScale(1.3, 1.3, 1.3);
         rifle.setRotationFromEuler(-10, 72, 12);
-        const blue = this.color(29, 86, 121);
-        const trim = this.color(26, 45, 65);
-        rifle.getComponentsInChildren(MeshRenderer).forEach((renderer, index) => {
-            renderer.setMaterial(index === 0 ? blue : trim, 0);
-        });
+        this.rewardAppearance.apply(rifle, damage);
+        const damageLabel = this.label(display, `火力+1 → ${damage}`, 0, 0.95, 0.2, 0.006, -15);
+        damageLabel.node.name = 'Reward damage';
 
         const haze = this.color(69, 222, 255, 112);
         const glow = this.color(171, 251, 255);
@@ -164,6 +215,13 @@ export class BridgeScenery {
         tween(rifle).to(0.85, { position: new Vec3(0, 0.22, 0) }, { easing: 'sineInOut' })
             .to(0.85, { position: new Vec3() }, { easing: 'sineInOut' }).union().repeatForever().start();
         return display;
+    }
+
+    updateRewardDisplay(display: Node, damage: number) {
+        // First child is the imported gun; the label and effects stay owned by this display.
+        this.rewardAppearance.apply(display.children[0], damage);
+        const label = display.getComponentInChildren(Label);
+        if (label) label.string = `火力+1 → ${damage}`;
     }
 
     bossWarning(stopZ: number) {

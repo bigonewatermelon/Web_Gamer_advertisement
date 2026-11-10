@@ -1,4 +1,4 @@
-# Web_Gamer_advertisement
+# David's Game
 
 一款用 Cocos Creator 3.8.5 制作的桥上无尽射击游戏。队伍自动前进和开火，玩家通过横移选择招募门、打爆轮胎换枪，并在 Boss 战中躲避攻击。
 

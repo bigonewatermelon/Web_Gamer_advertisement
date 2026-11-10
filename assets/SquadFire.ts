@@ -1,9 +1,9 @@
 import { AnimationClip, Color, Material, Mesh, MeshRenderer, Node, Prefab, Quat, SkeletalAnimation, Vec3, instantiate, primitives, tween, utils } from 'cc';
 
-const SHOT_INTERVAL = 0.38;
+const SHOT_INTERVAL = 0.19;
 const GUN_SCALE = 0.44;
 const TIRE_RANGE = 16;
-const TIRE_BURST_INTERVAL = 0.09;
+const TIRE_BURST_INTERVAL = 0.045;
 // The blaster-e model points along +Z. These coordinates are in its authored units.
 const GRIP = new Vec3(-0.045, -0.095, 0.48);
 const MUZZLE = new Vec3(-0.045, 0.016, 1.39);
@@ -11,6 +11,40 @@ const MUZZLE = new Vec3(-0.045, 0.016, 1.39);
 const RIFLE_GRIP = new Vec3(0, -0.105, -0.18);
 const RIFLE_MUZZLE = new Vec3(0, 0.02, 0.655);
 const FORWARD = new Vec3(0, 0, -1);
+
+/** One shared appearance rule for floating rewards and every equipped gun. */
+export class WeaponAppearance {
+    private readonly bodies = new Map<number, Material>();
+    private readonly trim = this.material(new Color(25, 44, 62));
+    private readonly colors = [
+        new Color(10, 163, 232), // Base: blue, damage 1.
+        new Color(57, 211, 113), // Green, damage 2.
+        new Color(255, 202, 48), // Gold, damage 3.
+        new Color(255, 117, 43), // Orange, damage 4.
+        new Color(235, 65, 112), // Pink, damage 5.
+        new Color(163, 83, 255), // Purple, damage 6.
+    ];
+
+    apply(gun: Node, damage: number) {
+        const colorTier = Number.isFinite(damage) ? Math.max(1, Math.min(6, Math.floor(damage))) : 6;
+        let body = this.bodies.get(colorTier);
+        if (!body) {
+            body = this.material(this.colors[colorTier - 1]);
+            this.bodies.set(colorTier, body);
+        }
+        // Both configured imported blasters name the body mesh after the prefab root.
+        for (const renderer of gun.getComponentsInChildren(MeshRenderer)) {
+            renderer.setMaterial(renderer.node.name === gun.name ? body : this.trim, 0);
+        }
+    }
+
+    private material(color: Color) {
+        const material = new Material();
+        material.initialize({ effectName: 'builtin-standard' });
+        material.setProperty('mainColor', color);
+        return material;
+    }
+}
 
 interface Arm {
     upper: Node;
@@ -36,10 +70,9 @@ export class SquadFire {
     private readonly spark = utils.createMesh(primitives.sphere(0.5, { segments: 5 }));
     private readonly white = this.makeMaterial(255, 251, 209);
     private readonly gold = this.makeMaterial(255, 143, 11);
+    private readonly buffGold = this.makeMaterial(255, 221, 76);
     private readonly debris = this.makeMaterial(107, 95, 68);
-    private readonly gunBody = this.makeMaterial(10, 163, 232, 'builtin-standard');
-    private readonly rifleBody = this.makeMaterial(163, 83, 255, 'builtin-standard');
-    private readonly gunTrim = this.makeMaterial(25, 44, 62, 'builtin-standard');
+    private readonly appearance = new WeaponAppearance();
     private readonly direction = new Vec3();
     private readonly muzzle = new Vec3();
     private readonly impact = new Vec3();
@@ -53,9 +86,17 @@ export class SquadFire {
     private readonly boneDirection = new Vec3();
     private readonly boneRotation = new Quat();
     private upgraded = false;
+    private damage = 1;
+    // Temporary rescue buffs never mutate permanent weapon tiers or preview colors.
+    bonusDamage = 0;
+    fireRateMultiplier = 1;
+    get shotDamage() { return this.damage + this.bonusDamage; }
+    shotInterval(tire: boolean) {
+        return (tire ? TIRE_BURST_INTERVAL : SHOT_INTERVAL) / this.fireRateMultiplier;
+    }
 
     constructor(private readonly root: Node, private gunPrefab: Prefab, private readonly targetingPose: AnimationClip,
-        private readonly shotRange: number) {}
+        private readonly shotRange: number, private readonly onShot?: () => void) {}
 
     equip(soldier: Node) {
         const chest = soldier.getChildByPath('Root/HipsCtrl/Hips/Spine/Chest/UpperChest');
@@ -79,11 +120,33 @@ export class SquadFire {
         this.weapons.set(soldier, { gun, left, right, aimPose, cooldown: Math.random() * 0.13, recoil: 0 });
     }
 
-    upgrade(prefab: Prefab) {
-        if (this.upgraded) return;
-        this.upgraded = true;
-        this.gunPrefab = prefab;
+    get damageLabel() { return `火力 ${this.damage}`; }
+    get currentDamage() { return this.damage; }
+
+    rewardDamage() {
+        // Every collected tire adds one permanent firepower, independent of reward order or buffs.
+        return Math.min(Number.MAX_SAFE_INTEGER, this.damage + 1);
+    }
+
+    decreaseDamage() {
+        this.damage = Math.max(1, this.damage - 1);
+        for (const weapon of this.weapons.values()) this.appearance.apply(weapon.gun, this.damage);
+    }
+
+    upgrade(prefab: Prefab | null) {
+        const damage = this.rewardDamage();
+        if (damage === this.damage) return;
+        this.damage = damage;
+        const replaceModel = !!prefab && !this.upgraded;
+        if (replaceModel) {
+            this.upgraded = true;
+            this.gunPrefab = prefab!;
+        }
         for (const weapon of this.weapons.values()) {
+            if (!replaceModel) {
+                this.appearance.apply(weapon.gun, this.damage);
+                continue;
+            }
             const oldGun = weapon.gun;
             weapon.gun = this.createGun();
             weapon.gun.setWorldPosition(oldGun.worldPosition);
@@ -99,10 +162,7 @@ export class SquadFire {
         this.root.addChild(gun);
         gun.active = false;
         gun.setScale(GUN_SCALE, GUN_SCALE, GUN_SCALE);
-        const body = this.upgraded ? this.rifleBody : this.gunBody;
-        for (const renderer of gun.getComponentsInChildren(MeshRenderer)) {
-            renderer.setMaterial(renderer.node.name === gun.name ? body : this.gunTrim, 0);
-        }
+        this.appearance.apply(gun, this.damage);
         return gun;
     }
 
@@ -114,15 +174,19 @@ export class SquadFire {
         this.weapons.delete(soldier);
     }
 
-    update(dt: number, enemies: Node[], tire: Node | null, focusTire: boolean,
-        hit: (target: Node, damage: number) => void, boss: Node | null = null) {
+    update(dt: number, enemies: Node[], tires: Node[],
+        hit: (target: Node, damage: number) => void, boss: Node | null = null,
+        tireRange?: (target: Node) => number, beforeTireShot?: (target: Node) => void) {
         for (const [soldier, weapon] of this.weapons) {
             for (const { joint, rotation } of weapon.aimPose) joint.setRotation(rotation);
-            weapon.cooldown = Math.max(0, weapon.cooldown - dt);
+            weapon.cooldown -= dt;
             weapon.recoil = Math.max(0, weapon.recoil - dt * 8);
 
             Vec3.lerp(this.chestCenter, weapon.left.upper.worldPosition, weapon.right.upper.worldPosition, 0.5);
-            const target = boss?.activeInHierarchy ? boss : focusTire ? tire : this.findTarget(soldier.worldPosition, enemies, tire);
+            const nearby = this.findTarget(soldier.worldPosition, enemies, tires, tireRange);
+            const tire = nearby && tires.indexOf(nearby) >= 0 ? nearby : null;
+            // A reachable tire must remain shootable at a boss stop, rather than being starved forever.
+            const target = tire ?? (boss?.activeInHierarchy ? boss : nearby);
             this.direction.set(FORWARD);
             if (target) {
                 this.impact.set(target.worldPosition);
@@ -151,7 +215,10 @@ export class SquadFire {
             weapon.gun.active = true;
             if (weapon.cooldown > 0) continue;
 
-            weapon.cooldown = focusTire ? TIRE_BURST_INTERVAL : SHOT_INTERVAL;
+            const interval = this.shotInterval(!!target && target === tire);
+            // Preserve fractional tire cadence (0.045s is not an integer number of frames).
+            // No catch-up burst after a hitch: still at most one shot per soldier per frame.
+            weapon.cooldown = target && target === tire ? Math.max(0, weapon.cooldown + interval) : interval;
             weapon.recoil = 1;
             Vec3.transformQuat(this.muzzle, this.upgraded ? RIFLE_MUZZLE : MUZZLE, this.rotation)
                 .multiplyScalar(GUN_SCALE).add(this.position);
@@ -159,10 +226,12 @@ export class SquadFire {
                 Vec3.scaleAndAdd(this.impact, this.muzzle, FORWARD, this.shotRange);
             }
             if (target && target === tire) {
-                this.drawShot(this.muzzle, this.impact, true, () => hit(target, 1));
+                beforeTireShot?.(target); // Lock HP at launch, never during lookahead or passive aiming.
+                const damage = this.shotDamage; // Capture at launch, not after a later upgrade/buff expiry.
+                this.drawShot(this.muzzle, this.impact, true, () => hit(target, damage));
             } else {
                 this.drawShot(this.muzzle, this.impact, !!target);
-                if (target) hit(target, this.upgraded ? 2 : 1);
+                if (target) hit(target, this.shotDamage);
             }
         }
     }
@@ -205,7 +274,7 @@ export class SquadFire {
         joint.setWorldRotation(this.boneRotation);
     }
 
-    private findTarget(origin: Readonly<Vec3>, enemies: Node[], tire: Node | null) {
+    private findTarget(origin: Readonly<Vec3>, enemies: Node[], tires: Node[], tireRange?: (target: Node) => number) {
         let nearest: Node | null = null;
         let best = Infinity;
         const rangeSquared = this.shotRange ** 2;
@@ -221,16 +290,29 @@ export class SquadFire {
             nearest = enemy;
         }
         // Nearby enemies still take priority over the tire.
-        if (best > 2.2 ** 2 && tire?.activeInHierarchy) {
-            const depth = origin.z - tire.worldPosition.z;
-            if (depth > 0.7 && depth < TIRE_RANGE && Math.abs(origin.x - tire.worldPosition.x) <= 1.45) return tire;
+        if (best > 2.2 ** 2) {
+            let nearestTire: Node | null = null;
+            let nearestDepth = Infinity;
+            for (const tire of tires) {
+                if (!tire.isValid || !tire.activeInHierarchy) continue;
+                const depth = origin.z - tire.worldPosition.z;
+                if (depth > 0.7 && depth < (tireRange?.(tire) ?? TIRE_RANGE)
+                    && depth < nearestDepth && Math.abs(origin.x - tire.worldPosition.x) <= 1.45) {
+                    nearestTire = tire;
+                    nearestDepth = depth;
+                }
+            }
+            if (nearestTire) return nearestTire;
         }
         return nearest;
     }
 
     private drawShot(from: Vec3, to: Vec3, hasTarget: boolean, onImpact?: () => void) {
+        this.onShot?.();
         const destination = to.clone();
-        this.burst('Muzzle flash', from, 0.24, this.gold, 0.085);
+        const enhanced = this.bonusDamage > 0; // Capture style at launch, just like shot damage.
+        const glow = enhanced ? this.buffGold : this.gold;
+        this.burst('Muzzle flash', from, enhanced ? 0.34 : 0.24, glow, 0.085);
         const direction = Vec3.subtract(new Vec3(), to, from);
         const length = direction.length();
         direction.normalize();
@@ -238,14 +320,15 @@ export class SquadFire {
         this.root.addChild(projectile);
         projectile.setWorldPosition(from);
         projectile.setWorldRotation(Quat.rotationTo(new Quat(), Vec3.UNIT_Z, direction));
-        const trail = this.effect('Bullet trail', this.tracer, this.gold, from, projectile);
-        const head = this.effect('Bullet', this.spark, this.white, from, projectile);
-        head.setScale(0.15, 0.15, 0.23);
+        const trail = this.effect(enhanced ? 'Power trail' : 'Bullet trail', this.tracer, glow, from, projectile);
+        const head = this.effect('Bullet', this.spark, enhanced ? this.buffGold : this.white, from, projectile);
+        const size = enhanced ? 0.2 : 0.15;
+        head.setScale(size, size, enhanced ? 0.3 : 0.23);
 
         const duration = Math.max(0.13, Math.min(0.29, length / 72));
         const extendTrail = (ratio: number) => {
             const segment = Math.min(3, Math.max(0.01, length * ratio));
-            const width = 0.085 * (1 - ratio * 0.45);
+            const width = (enhanced ? 0.125 : 0.085) * (1 - ratio * 0.45);
             trail.setPosition(0, 0, -segment / 2);
             trail.setScale(width, width, segment);
         };
@@ -254,18 +337,19 @@ export class SquadFire {
             .call(() => {
                 projectile.destroy();
                 if (onImpact) {
-                    this.burst('Tire hit', destination, 0.16, this.gold, 0.08);
+                    this.burst('Tire hit', destination, enhanced ? 0.24 : 0.16, glow, 0.08);
                     onImpact();
-                } else if (hasTarget) this.drawImpact(destination);
+                } else if (hasTarget) this.drawImpact(destination, enhanced);
             }).start();
     }
 
-    private drawImpact(at: Vec3) {
-        this.burst('Hit flash', at, 0.3, this.gold, 0.15);
+    private drawImpact(at: Vec3, enhanced = false) {
+        const glow = enhanced ? this.buffGold : this.gold;
+        this.burst('Hit flash', at, enhanced ? 0.42 : 0.3, glow, 0.15);
         for (let i = 0; i < 5; i++) {
             const angle = Math.random() * Math.PI * 2;
             const distance = 0.17 + Math.random() * 0.27;
-            const chip = this.effect('Hit fragment', this.spark, i < 2 ? this.gold : this.debris, at);
+            const chip = this.effect('Hit fragment', this.spark, enhanced || i < 2 ? glow : this.debris, at);
             chip.setScale(0.055, 0.055, 0.055);
             const scatter = new Vec3(at.x + Math.cos(angle) * distance, at.y + 0.12 + Math.random() * 0.26,
                 at.z + Math.sin(angle) * distance);
