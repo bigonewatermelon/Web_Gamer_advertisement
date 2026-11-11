@@ -120,7 +120,7 @@ export class SquadFire {
         this.weapons.set(soldier, { gun, left, right, aimPose, cooldown: Math.random() * 0.13, recoil: 0 });
     }
 
-    get damageLabel() { return `火力 ${this.damage}`; }
+    get damageLabel() { return `Power ${this.damage}`; }
     get currentDamage() { return this.damage; }
 
     rewardDamage() {

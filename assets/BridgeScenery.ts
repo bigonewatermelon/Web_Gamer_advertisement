@@ -201,7 +201,10 @@ export class BridgeScenery {
         rifle.setScale(1.3, 1.3, 1.3);
         rifle.setRotationFromEuler(-10, 72, 12);
         this.rewardAppearance.apply(rifle, damage);
-        const damageLabel = this.label(display, `火力+1 → ${damage}`, 0, 0.95, 0.2, 0.006, -15);
+        const damageLabel = this.label(display, `Power +1 → ${damage}`, 0, 0.95, 0.2, 0.006, -15);
+        // Fit the wider English reward text within the lane on portrait screens.
+        damageLabel.fontSize = 76;
+        damageLabel.lineHeight = 88;
         damageLabel.node.name = 'Reward damage';
 
         const haze = this.color(69, 222, 255, 112);
@@ -221,7 +224,7 @@ export class BridgeScenery {
         // First child is the imported gun; the label and effects stay owned by this display.
         this.rewardAppearance.apply(display.children[0], damage);
         const label = display.getComponentInChildren(Label);
-        if (label) label.string = `火力+1 → ${damage}`;
+        if (label) label.string = `Power +1 → ${damage}`;
     }
 
     bossWarning(stopZ: number) {
@@ -237,7 +240,11 @@ export class BridgeScenery {
     }
 
     bossLabel(node: Node, text: string) {
-        return this.label(node, text, 0, 3.45, 0.12, 0.0075, -12, new Color(102, 27, 35));
+        // Keep the two-line name and HP near the model and below the portrait HUD.
+        const label = this.label(node, text, 0, 2.3, 0.48, 0.0075, -12, new Color(102, 27, 35));
+        label.fontSize = 68;
+        label.lineHeight = 80;
+        return label;
     }
 
     private gateColors(r: number, g: number, b: number, capR: number, capG: number, capB: number) {

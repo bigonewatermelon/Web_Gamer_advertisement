@@ -37,9 +37,9 @@ const BOSS_APPROACH_SPEED = 6;
 const BOSS_RETREAT_SPEED = 7;
 const BOSS_WINDUP = 0.8;
 const BOSS_MODELS: Record<string, { title: string; scale: number; color: Color }> = {
-    MushroomKing: { title: '蘑菇王', scale: 0.79, color: new Color(233, 111, 63) },
-    Orc_Skull: { title: '骷髅兽人', scale: 0.87, color: new Color(173, 190, 113) },
-    BlueDemon: { title: '蓝魔', scale: 0.56, color: new Color(59, 160, 238) },
+    MushroomKing: { title: 'Mushroom King', scale: 0.79, color: new Color(233, 111, 63) },
+    Orc_Skull: { title: 'Skull Orc', scale: 0.87, color: new Color(173, 190, 113) },
+    BlueDemon: { title: 'Blue Demon', scale: 0.56, color: new Color(59, 160, 238) },
 };
 const GATE_ROWS = [
     { z: -7 },
@@ -300,7 +300,7 @@ export class GameManager extends Component {
         if (!model.active) this.squadFire?.unequip(model);
         if (this.count > previous && !this.finished) {
             this.upgradeRecruits = (this.buffToastTime > 0 && this.upgradeTitles.has(-2) ? this.upgradeRecruits : 0) + this.count - previous;
-            this.showUpgrade(-2, `队伍壮大 +${this.upgradeRecruits}`);
+            this.showUpgrade(-2, `Squad +${this.upgradeRecruits}`);
         }
     }
 
@@ -502,7 +502,7 @@ export class GameManager extends Component {
 
         const model = instantiate(prefab);
         const style = BOSS_MODELS[model.name];
-        const title = style?.title ?? '首领';
+        const title = style?.title ?? 'Boss';
         const scale = style?.scale ?? 0.8;
         const node = new Node(`Boss ${model.name}`);
         this.node.addChild(node);
@@ -525,10 +525,11 @@ export class GameManager extends Component {
         const animation = node.getComponentInChildren(SkeletalAnimation);
         const warning = bridge.bossWarning(z);
         warning.setScale(BOSS_MELEE_WIDTH / 1.975, 1, BOSS_MELEE_DEPTH * 2 / 5);
+        // Use separate lines for the boss name and HP here and on every hit.
         this.bosses.push({
             node, title, maxHealth, health: maxHealth, animation, phase: 'waiting',
             warning,
-            label: bridge.bossLabel(node, `${title}  ${maxHealth}/${maxHealth}`),
+            label: bridge.bossLabel(node, `${title}\n${maxHealth}/${maxHealth}`),
             attackTimer: 0,
         });
     }
@@ -649,7 +650,7 @@ export class GameManager extends Component {
         const boss = this.bosses[0];
         if (boss?.node === target) {
             boss.health = Math.max(0, boss.health - damage);
-            boss.label.string = `${boss.title}  ${boss.health}/${boss.maxHealth}`;
+            boss.label.string = `${boss.title}\n${boss.health}/${boss.maxHealth}`;
             if (boss.health === 0) {
                 this.audio?.play('boss-win');
                 this.bosses.shift();
@@ -681,7 +682,7 @@ export class GameManager extends Component {
             const upgradedDamage = this.squadFire?.currentDamage ?? 1;
             if (upgradedDamage > previousDamage) {
                 this.audio?.play('upgrade');
-                this.showUpgrade(-1, `武器升级 · 火力 ${upgradedDamage}`);
+                this.showUpgrade(-1, `Weapon Upgrade · Power ${upgradedDamage}`);
             }
             this.refreshRewardPreviews();
             this.showCount();
@@ -999,7 +1000,7 @@ export class GameManager extends Component {
         this.survivorMaterial ??= this.makeMaterial('builtin-standard', 0, new Color(132, 241, 221));
         for (const renderer of model.getComponentsInChildren(MeshRenderer)) renderer.setMaterial(this.survivorMaterial, 0);
         this.playLooping(model);
-        const label = this.bridge.bossLabel(node, '救援 +\n1 HP');
+        const label = this.bridge.bossLabel(node, 'Rescue\n1 HP');
         label.node.parent!.setPosition(0, 1.35, 0);
         label.fontSize = 65;
         label.lineHeight = 75;
@@ -1123,8 +1124,8 @@ export class GameManager extends Component {
     }
 
     private showBuffPickup(kind: number, refreshed: boolean) {
-        const name = kind === 0 ? '火力强化 +1' : kind === 1 ? '急速射击 ×1.5' : '护盾就绪';
-        this.showUpgrade(kind, `${name}${refreshed ? ' · 刷新' : ' · 获得'}`);
+        const name = kind === 0 ? 'Power +1' : kind === 1 ? 'Rapid Fire ×1.5' : 'Shield Ready';
+        this.showUpgrade(kind, `${name}${refreshed ? ' · Refreshed' : ''}`);
     }
 
     private showUpgrade(kind: number, title: string) {
@@ -1273,11 +1274,12 @@ export class GameManager extends Component {
     }
 
     private rescueBuffLabel() {
+        // Keep all active rescue buffs on one compact HUD line.
         const buffs: string[] = [];
-        if (this.damageBuffTime > 0) buffs.push(`伤害+1 ${Math.ceil(this.damageBuffTime)}s`);
-        if (this.hasteBuffTime > 0) buffs.push(`射速×1.5 ${Math.ceil(this.hasteBuffTime)}s`);
-        if (this.shieldCharges > 0) buffs.push('护盾 1次');
-        return buffs.length ? `\n救援奖励 · ${buffs.join(' · ')}` : '';
+        if (this.damageBuffTime > 0) buffs.push(`Damage +1 ${Math.ceil(this.damageBuffTime)}s`);
+        if (this.hasteBuffTime > 0) buffs.push(`Rate ×1.5 ${Math.ceil(this.hasteBuffTime)}s`);
+        if (this.shieldCharges > 0) buffs.push('Shield ×1');
+        return buffs.length ? `\nBuffs · ${buffs.join(' · ')}` : '';
     }
 
     // ---------- Helpers ----------
@@ -1286,14 +1288,14 @@ export class GameManager extends Component {
         const label = this.countLabel;
         if (!label) return;
         const firepower = this.squadFire ? ` · ${this.squadFire.damageLabel}` : '';
-        const progress = `击杀 ${this.zombieKills} · 僵尸 HP ${this.currentZombieHP}${this.rescueBuffLabel()}`;
+        const progress = `Kills ${this.zombieKills} · Zombie HP ${this.currentZombieHP}${this.rescueBuffLabel()}`;
         const boss = this.bosses[0];
         if (boss && this.player && boss.phase !== 'waiting') {
-            const hint = boss.warning.active ? (boss.warning.position.x < 0 ? '向右闪避' : '向左闪避') : '首领战';
-            label.string = `${hint} · 队伍 ${this.count}/${MAX_SQUAD_SIZE}${firepower}\n${progress}`;
+            const hint = boss.warning.active ? (boss.warning.position.x < 0 ? 'Dodge Right' : 'Dodge Left') : 'Boss Fight';
+            label.string = `${hint} · Squad ${this.count}/${MAX_SQUAD_SIZE}${firepower}\n${progress}`;
             return;
         }
-        const text = `队伍 ${this.count}/${MAX_SQUAD_SIZE} · ${this.distance()} m${firepower}\n${progress}`;
+        const text = `Squad ${this.count}/${MAX_SQUAD_SIZE} · ${this.distance()} m${firepower}\n${progress}`;
         if (label.string !== text) label.string = text;
     }
 
@@ -1314,7 +1316,7 @@ export class GameManager extends Component {
             ?? this.player?.getComponent(SkeletalAnimation);
         leaderAnimation?.stop();
         for (const member of this.squadMembers) member.getComponent(SkeletalAnimation)?.stop();
-        if (this.countLabel) this.countLabel.string = `挑战结束   ·   跑了 ${this.distance()} m`;
+        if (this.countLabel) this.countLabel.string = `Game Over · ${this.distance()} m`;
         this.showRestartButton();
     }
 
@@ -1341,7 +1343,7 @@ export class GameManager extends Component {
         text.layer = node.layer;
         node.addChild(text);
         const label = text.addComponent(Label);
-        label.string = '复活重来';
+        label.string = 'Play Again';
         label.fontSize = 36;
         label.lineHeight = 44;
         label.isBold = true;
@@ -1589,8 +1591,8 @@ export class GameManager extends Component {
         const charge = Math.min(target, this.bossCharge);
         const active = this.bosses.length > 0;
         const available = !!this.bossPrefabs[this.bossEncounterIndex % this.bossPrefabs.length];
-        const text = active ? 'BOSS · 战斗中' : charge >= target
-            ? (available ? 'BOSS · 来袭！' : 'BOSS · 等待配置') : `BOSS  ${charge}/${target}`;
+        const text = active ? 'BOSS · In Battle' : charge >= target
+            ? (available ? 'BOSS · Incoming!' : 'BOSS · Unavailable') : `BOSS  ${charge}/${target}`;
         if (label.string !== text) label.string = text;
         const ratio = active ? 1 : charge / target;
         const delta = ratio - this.bossMeterShown;

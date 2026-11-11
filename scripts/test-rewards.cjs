@@ -124,7 +124,7 @@ for (const [index, reward] of g.tireRewards.entries()) {
     assert.ok(Math.abs(reward.node.position.x) + 1.16 < 3.93); // Halo fits inside curb.
     assert.equal(reward.display.position.x, reward.node.position.x);
     assert.equal(reward.display.position.z, reward.node.position.z - 0.6);
-    assert.equal(reward.display.getComponentInChildren(cc.Label).string, '火力+1 → 2');
+    assert.equal(reward.display.getComponentInChildren(cc.Label).string, 'Power +1 → 2');
 }
 const streamed = manager();
 streamed.bridge = { ...bridge, extendTo: () => {} };
@@ -248,7 +248,7 @@ assert.equal(weapon.gun.name, 'blaster-f');
 assert.equal(weapon.gun.active, true);
 assert.equal(collectedLabel.isValid, false);
 assert.equal(older.previewDamage, 3);
-assert.equal(older.display.getComponentInChildren(cc.Label).string, '火力+1 → 3');
+assert.equal(older.display.getComponentInChildren(cc.Label).string, 'Power +1 → 3');
 assert.notDeepEqual(bodyColor(older.display.children[0]), bodyColor(weapon.gun));
 const sameGun = weapon.gun;
 skipped.lockRewardHealth(older.node, 1 / 60);
@@ -469,7 +469,7 @@ for (const [meters, hp] of [[0, 1], [99.99, 1], [100, 2], [199.99, 2], [200, 3],
 }
 assert.equal(kills.zombieKills, 400);
 kills.countLabel = {}; kills.showCount();
-assert.ok(kills.countLabel.string.includes('击杀 400 · 僵尸 HP 4'));
+assert.ok(kills.countLabel.string.includes('Kills 400 · Zombie HP 4'));
 const passing = streamManager(); passing.spawnZombie(0, 10);
 passing.moveZombies(0.1, 0); assert.equal(passing.zombies.length, 0); assert.equal(passing.zombieKills, 0);
 const contact = streamManager(); contact.soldierModel = null; contact.spawnZombie(0, -30);
@@ -519,7 +519,7 @@ function checkGrid(m, count) {
         assert.ok(Math.abs(z - base[2] - Math.floor(i / 3) * 0.6) < 1e-10);
     });
     assert.equal(m.squadRearExtent(), base[2] + Math.floor((count - 1) / 3) * 0.6);
-    assert.ok(m.countLabel.string.includes(`队伍 ${count}/9`));
+    assert.ok(m.countLabel.string.includes(`Squad ${count}/9`));
 }
 const formation = formationManager();
 for (let count = 1; count <= 9; count++) {
@@ -810,9 +810,9 @@ for (const [width, height] of [[720, 1280], [1280, 720], [400, 800], [320, 640]]
     assert.equal(meter.listeners, undefined);
 }
 hudManager.bossCharge = 42; hudManager.updateBossMeter(1); assert.equal(hudManager.bossMeterLabel.string, 'BOSS  42/150');
-hudManager.bossCharge = 150; hudManager.updateBossMeter(1); assert.equal(hudManager.bossMeterLabel.string, 'BOSS · 等待配置');
-hudManager.bossPrefabs = [{}]; hudManager.updateBossMeter(1); assert.equal(hudManager.bossMeterLabel.string, 'BOSS · 来袭！');
-hudManager.bosses = [{}]; hudManager.updateBossMeter(1); assert.equal(hudManager.bossMeterLabel.string, 'BOSS · 战斗中');
+hudManager.bossCharge = 150; hudManager.updateBossMeter(1); assert.equal(hudManager.bossMeterLabel.string, 'BOSS · Unavailable');
+hudManager.bossPrefabs = [{}]; hudManager.updateBossMeter(1); assert.equal(hudManager.bossMeterLabel.string, 'BOSS · Incoming!');
+hudManager.bosses = [{}]; hudManager.updateBossMeter(1); assert.equal(hudManager.bossMeterLabel.string, 'BOSS · In Battle');
 console.log('Boss charge regressions passed: 150 kills/default and configurable target, exact-once delayed impacts, deferred 24-ahead spawn, gate/distance independence, special gates retained, one boss/no backlog/no bank, actual death reset, encounter growth, empty prefab recovery, exclusions, portrait/landscape HUD bounds and explicit states.');
 
 function rescueManager() {
@@ -883,8 +883,8 @@ penaltyShield.player.position.z = -32; penaltyShield.previousPlayerPosition.set(
 penaltyShield.gates = [{z:-31,left:{node:new Node(),value:-1},right:{node:new Node(),value:-1}}];
 penaltyShield.checkPathEvents(0); assert.equal(penaltyShield.count, 3); assert.equal(penaltyShield.shieldCharges, 1);
 rescuedBuff.grantRescueBuff(0); rescuedBuff.grantRescueBuff(1); rescuedBuff.grantRescueBuff(2);
-rescuedBuff.countLabel = {}; rescuedBuff.showCount(); assert.ok(rescuedBuff.countLabel.string.includes('伤害+1 10s'));
-assert.ok(rescuedBuff.countLabel.string.includes('射速×1.5 10s')); assert.ok(rescuedBuff.countLabel.string.includes('护盾 1次'));
+rescuedBuff.countLabel = {}; rescuedBuff.showCount(); assert.ok(rescuedBuff.countLabel.string.includes('Damage +1 10s'));
+assert.ok(rescuedBuff.countLabel.string.includes('Rate ×1.5 10s')); assert.ok(rescuedBuff.countLabel.string.includes('Shield ×1'));
 rescuedBuff.clearRescueBuffs(); assert.equal(rescueFire.bonusDamage, 0); assert.equal(rescueFire.fireRateMultiplier, 1);
 assert.equal(rescuedBuff.shieldCharges, 0);
 console.log('Survivor regressions passed: random gap endpoints, travel schedule, boss pause/no backlog, one friendly/1HP, excluded targets, first bite death/no kill credit, swept follower contact, event ordering, one reward, passed cleanup, damage and rate refresh/expiry/permanent tier preservation, shield attack consumption/zombie credit/negative gate exclusion, explicit buff HUD and reset.');
@@ -933,14 +933,14 @@ visuals.grantRescueBuff(1); const effectRoot = visuals.buffFXRoot, firstToast = 
 assert.ok(visuals.hasteFX.active); assert.equal(visuals.shieldFX.active, false);
 assert.equal(effectRoot.getComponentsInChildren(MeshRenderer).length, 11);
 assert.ok(visuals.buffStars.every(n => n.active)); assert.ok(firstToast.active);
-assert.ok(visuals.buffToastLabel.string.includes('急速射击'));
+assert.ok(visuals.buffToastLabel.string.includes('Rapid Fire'));
 assert.equal(firstToast.getComponent(Button), undefined); assert.equal(firstToast.listeners, undefined);
 const oldRotation = visuals.hasteFX.eulerAngles.y;
 visuals.updateBuffEffects(0.2); assert.notEqual(visuals.hasteFX.eulerAngles.y, oldRotation);
 visuals.player.position.x += 1.5; visuals.updateBuffEffects(0);
 assert.equal(effectRoot.worldPosition.x, visuals.player.worldPosition.x);
 visuals.grantRescueBuff(1); assert.equal(visuals.buffFXRoot, effectRoot); assert.equal(visuals.buffToast, firstToast);
-assert.ok(visuals.buffToastLabel.string.includes('刷新'));
+assert.ok(visuals.buffToastLabel.string.includes('Refreshed'));
 assert.equal(effectRoot.getComponentsInChildren(MeshRenderer).length, 11); // Fixed pool, no refresh allocation.
 visuals.grantRescueBuff(2); visuals.grantRescueBuff(0);
 assert.ok(visuals.hasteFX.active && visuals.shieldFX.active); assert.equal(visuals.squadFire.bonusDamage, 1);
@@ -1013,18 +1013,18 @@ for (const ended of [false, true]) {
 }
 const growth = formationManager(); growth.node.scene = scene;
 assert.equal(growth.buffFXRoot, null); growth.setSquadCount(1); assert.equal(growth.buffFXRoot, null);
-growth.setSquadCount(3); assert.equal(growth.upgradeTitles.get(-2), '队伍壮大 +2');
+growth.setSquadCount(3); assert.equal(growth.upgradeTitles.get(-2), 'Squad +2');
 assert.ok(growth.upgradeFX.active); const pool = growth.buffFXRoot;
-growth.setSquadCount(12); assert.equal(growth.count, 9); assert.equal(growth.upgradeTitles.get(-2), '队伍壮大 +8');
+growth.setSquadCount(12); assert.equal(growth.count, 9); assert.equal(growth.upgradeTitles.get(-2), 'Squad +8');
 growth.updateBuffEffects(0.2); const starTime = growth.buffStarTime;
 growth.setSquadCount(15); growth.setSquadCount(4); assert.equal(growth.buffStarTime, starTime);
-growth.updateBuffEffects(3); growth.setSquadCount(5); assert.equal(growth.upgradeTitles.get(-2), '队伍壮大 +1');
+growth.updateBuffEffects(3); growth.setSquadCount(5); assert.equal(growth.upgradeTitles.get(-2), 'Squad +1');
 assert.equal(growth.buffFXRoot, pool);
 const uninitialized = new GameManager(); uninitialized.player = new Node(); uninitialized.setSquadCount(2);
 assert.equal(uninitialized.buffFXRoot, null); // No model/formation yet: no initialization celebration.
 growth.squadFire = new SquadFire(new Node(), { name: 'blaster-e' }, {}, 28.5);
 function upgradeTire(m) { const node = new Node(); m.tireRewards.push({node,health:1,label:{},display:null}); m.hitTarget(node,1); }
-upgradeTire(growth); assert.equal(growth.upgradeTitles.get(-1),'武器升级 · 火力 2');
+upgradeTire(growth); assert.equal(growth.upgradeTitles.get(-1),'Weapon Upgrade · Power 2');
 growth.updateBuffEffects(0.2); const weaponTime = growth.buffStarTime;
 upgradeTire(growth); upgradeTire(growth); assert.ok(growth.buffStarTime>weaponTime);
 assert.equal(growth.squadFire.currentDamage,4);
@@ -1032,15 +1032,15 @@ upgradeTire(growth); growth.updateBuffEffects(0.2); const cappedTime=growth.buff
 upgradeTire(growth); assert.ok(growth.buffStarTime>cappedTime);
 for(let i=0;i<20;i++) for(const kind of [0,1,2]) growth.grantRescueBuff(kind);
 assert.equal(growth.upgradeTitles.size,5); assert.equal(growth.buffToastLabel.string.split('\n').length,5);
-assert.ok(growth.buffToastLabel.string.includes('刷新')); assert.ok(growth.buffToastLabel.string.includes('队伍壮大'));
-assert.ok(growth.buffToastLabel.string.includes('火力 6')); assert.equal(growth.buffFXRoot,pool);
+assert.ok(growth.buffToastLabel.string.includes('Refreshed')); assert.ok(growth.buffToastLabel.string.includes('Squad +'));
+assert.ok(growth.buffToastLabel.string.includes('Power 6')); assert.equal(growth.buffFXRoot,pool);
 assert.equal(pool.getComponentsInChildren(MeshRenderer).length,11);
 assert.equal(growth.buffFXMaterials.length,3); assert.equal(growth.buffFXMeshes.length,3);
 growth.updateBuffEffects(3); assert.equal(growth.upgradeFX.active,false); assert.equal(growth.buffToast.active,false);
 assert.ok(growth.hasteFX.active && growth.shieldFX.active);
 growth.grantRescueBuff(0); assert.equal(growth.upgradeTitles.size,1);
 growth.squadFire = null; // Formation double has no authored skeletal weapon attachment paths.
-growth.setSquadCount(6); assert.equal(growth.upgradeTitles.get(-2),'队伍壮大 +1'); // Expired recruitment must not leak into a later buff presentation.
+growth.setSquadCount(6); assert.equal(growth.upgradeTitles.get(-2),'Squad +1'); // Expired recruitment must not leak into a later buff presentation.
 growth.disposeBuffEffects(); assert.equal(growth.upgradeTitles.size,0); assert.equal(growth.upgradeFX,null);
 console.log('Restart teardown + unified upgrade regressions passed: destroyed sibling/component refs and positions, death/live FX teardown repeated; no init/loss flashes, actual recruit delta and every collected weapon, buff gain/refresh, five-category combined bounded toast, fixed eleven-renderer pool, independent persistent buffs, expiry and disposal.');
 
@@ -1048,7 +1048,7 @@ console.log('Restart teardown + unified upgrade regressions passed: destroyed si
 const endless = new SquadFire(new Node(), {name:'blaster-e'}, {}, 28.5);
 const endlessHeld = endless.createGun(); endless.weapons.set(new Node(), {gun:endlessHeld});
 for (let i=0;i<100;i++) endless.upgrade(null);
-assert.equal(endless.currentDamage,101); assert.equal(endless.damageLabel,'火力 101');
+assert.equal(endless.currentDamage,101); assert.equal(endless.damageLabel,'Power 101');
 assert.ok(endless.appearance.bodies.size<=6);
 assert.deepEqual(bodyColor(endlessHeld),bodyColor(gun.createGun()));
 endless.damage = Number.MAX_SAFE_INTEGER - 1; // Isolate the numeric safety boundary.
@@ -1063,8 +1063,8 @@ loss.addGateRow(bridge,-100,1,1); const preview=loss.tireRewards[0];
 assert.equal(preview.previewDamage,26);
 loss.updateBuffEffects(3); loss.setSquadCount(6);
 assert.equal(loss.squadFire.currentDamage,24); assert.equal(preview.previewDamage,25);
-assert.equal(preview.display.getComponentInChildren(cc.Label).string,'火力+1 → 25');
-assert.ok(loss.countLabel.string.includes('火力 24')); assert.equal(loss.buffStarTime,0);
+assert.equal(preview.display.getComponentInChildren(cc.Label).string,'Power +1 → 25');
+assert.ok(loss.countLabel.string.includes('Power 24')); assert.equal(loss.buffStarTime,0);
 loss.setSquadCount(6); assert.equal(loss.squadFire.currentDamage,24);
 loss.shieldCharges=1; loss.applyAttackLoss(3); assert.equal(loss.count,6); assert.equal(loss.squadFire.currentDamage,24);
 loss.applyAttackLoss(3); assert.equal(loss.count,3); assert.equal(loss.squadFire.currentDamage,23);
